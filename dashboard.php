@@ -22,7 +22,7 @@
 	<body>
 
 		<div class="uk-section uk-container">
-			Dashboard. You are signed in as user <?php echo $_SESSION['user_id']; ?>
+			Dashboard. You are signed in as user <?php echo $_SESSION['user_id']; ?>. <a href="logout.php">Logout</a>
 		</div>
 		
 		<?php require_once 'inc/footer.php'; ?>
