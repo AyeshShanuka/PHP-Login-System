@@ -5,6 +5,11 @@
 		exit("You do not have a config file");
 	}
 
+	// Sessions are always on
+	if(!isset($_SESSION)) {
+		session_start();
+	}
+
 	// Allow the footer
 	define('ALLOW_FOOTER', true);
 
