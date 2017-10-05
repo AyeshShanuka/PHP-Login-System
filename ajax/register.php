@@ -12,18 +12,39 @@
 
 		$return = [];
 
+		$email = Filter::String( $_POST['email'] );
+
 		// Make sure the user does not exist
+		$findUser = $con->prepare("SELECT user_id FROM users WHERE email = LOWER(:email) LIMIT 1");
+		$findUser->bindParam(':email', $email, PDO::PARAM_STR);
+		$findUser->execute();
 
-		// Make sure the user can be added and is added
+		if($findUser->rowCount() == 1) {
+			// User exist
+			$return['error'] = "You already have an account";
+			$return['is_logged_in'] = false;
+		} else {
+			// User does not exist, adding them
 
-		// Return proper infoirmation to the java script to redirect
+			$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-		$return['redirect'] = 'dashboard.php';
+			$addUser = $con->prepare("INSERT INTO users(email, password) VALUES(LOWER(:email), :password)");
+			$addUser->bindParam(':email', $email, PDO::PARAM_STR);
+			$addUser->bindParam(':password', $password, PDO::PARAM_STR);
+			$addUser->execute();
+
+			$user_id = $con->lastInsertId();
+
+			$_SESSION['user_id'] = (int) $user_id;
+
+			$return['redirect'] = 'dashboard.php?message=welcome';
+			
+		}
 
 		echo json_encode($return, JSON_PRETTY_PRINT); exit;
 	} else {
 		// Die. Kill the script and redirect the user and do 
-		exit('test');
+		exit('Invalid URL');
 	}
 
 ?>
